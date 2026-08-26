@@ -51,17 +51,7 @@ function splitBill(bill, tipPercent, numPeople) {
   return splitEvenly(total, numPeople);
 }
 
-// ─── VERIFICATION ─────────────────────────────────────────────────────────────
-
-const result = splitBill(10.03, 15, 3);
-
-console.log("Grand total :", (10.03 * 1.15).toFixed(2));   // 11.53
-console.log("Shares      :", result.shares);                // [3.85, 3.84, 3.84]
-console.log("Sum of shares:", result.shares.reduce((a,b) => +(a+b).toFixed(2), 0)); // 11.53 ✅
-console.log("Remainder ¢ :", result.remainderCents);        // 1
-console.log("Assigned to :", result.remainderAssignedTo);   // [1]
-
-// Edge case: perfectly divisible
-const even = splitBill(30.00, 0, 3);
-console.log("\nEven split  :", even.shares);                 // [10, 10, 10]
-console.log("Remainder ¢ :", even.remainderCents);          // 0
+// ─── Exports (used by Jest test suite) ────────────────────────────────────────
+if (typeof module !== 'undefined') {
+  module.exports = { calculateTotal, splitEvenly, splitBill };
+}
