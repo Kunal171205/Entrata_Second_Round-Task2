@@ -35,9 +35,6 @@ The leftover cent simply disappeared with no assignment or error.
 
 ---
 
-## Before / After Screenshot
-
-![Bug vs Fix comparison](bug-fix-comparison.jpg)
 
 ---
 
