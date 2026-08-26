@@ -1,4 +1,4 @@
-﻿# Tip Splitter — Bug Fix
+# Tip Splitter — Bug Fix
 
 > **Task:** Fix incorrect per-person rounding in a bill-splitter utility.
 > The app splits a total (bill + tip) evenly across N people, handles cents fairly,
@@ -120,6 +120,61 @@ fix: apply tip once and distribute remainder cents explicitly instead of double-
 
 | File | Purpose |
 |------|---------|
-| tip-splitter-fixed.js | Corrected implementation with verification |
-| tip-splitter-buggy.js | Original buggy code preserved for reference |
-| index.html + app.js + style.css | Full browser UI with audit log |
+| `tip-splitter-fixed.js` | Corrected implementation with verification |
+| `tip-splitter-buggy.js` | Original buggy code preserved for reference |
+| `index.html` | Full browser UI containing embedded CSS and modular script logic |
+| `tip-splitter.test.js` | Vanilla JS CLI test suite (no external dependencies required) |
+| `test_ui.py` | Pytest Playwright script for automated End-to-End browser testing of the UI |
+
+---
+
+## Automated Testing Results
+
+To ensure the bug does not regress and the UI behaves exactly as expected, a comprehensive suite of automated tests was written and executed successfully.
+
+### 1. UI Integration Testing (Python + Pytest + Playwright)
+A full E2E test suite running in a real headless browser was built to simulate a user typing into the UI.
+
+```bash
+$ pytest test_ui.py
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0
+rootdir: P:\TASK-2_Entrata_second_round
+plugins: anyio-4.12.0, base-url-2.1.0, playwright-0.9.0
+collected 4 items
+
+test_ui.py ....                                                          [100%]
+
+============================== 4 passed in 4.64s ==============================
+```
+
+### 2. Logic Unit Testing (Vanilla JS)
+The underlying algorithm logic was stress-tested across 13 extreme edge cases (including large bills, large parties, 1-cent splits, etc.) asserting perfect mathematical equality.
+
+```bash
+$ node tip-splitter.test.js
+Starting TipSplit tests...
+
+✅ PASS: Bug Scenario: grand total is $11.53 (tip applied exactly once)
+✅ PASS: Bug Scenario: shares sum to exactly the grand total
+✅ PASS: Bug Scenario: Person 1 pays $3.85 (base + 1¢ remainder)
+✅ PASS: Bug Scenario: Person 2 and 3 pay $3.84 (base share only)
+✅ PASS: Bug Scenario: remainder is exactly 1 cent assigned to Person 1
+✅ PASS: 0% tip: shares sum to exactly $10.03
+✅ PASS: 0% tip: extra cent assigned to Person 1
+✅ PASS: Evenly Divisible: shares sum to exactly $30.00
+✅ PASS: Evenly Divisible: every person pays exactly $10.00
+✅ PASS: Evenly Divisible: remainder is 0 cents
+✅ PASS: 1¢ Remainder (2 people): shares sum to exactly $10.01
+✅ PASS: 1¢ Remainder (2 people): assigns single remainder cent to first person only
+✅ PASS: 2¢ Remainder (3 people): shares sum to exactly $10.04
+✅ PASS: 2¢ Remainder (4 people): shares sum to exactly $10.02
+✅ PASS: 2¢ Remainder (5 people): first 2 pay extra cent, remaining 3 do not
+✅ PASS: Single Person: single share equals grand total $51.08
+✅ PASS: Large Party (10): shares sum to exactly $10.07
+✅ PASS: Large Party (10): remainder is 7 cents, assigned to first 7 people
+✅ PASS: Large Party (10): shares differ by at most 1 cent
+✅ PASS: Sum-equals-total invariant holds across 13 combinations
+
+Test Summary: 20 passed, 0 failed.
+```
