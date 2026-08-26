@@ -336,7 +336,8 @@
     const blob = new Blob([moduleScript], { type: 'text/javascript' });
     const url = URL.createObjectURL(blob);
     
-    import { splitBill, calculateTotal } from /* webpackIgnore: true */ url;
+    // Use dynamic import since static import requires a string literal
+    const { splitBill, calculateTotal } = await import(url);
 
     // DOM Elements
     const els = {
