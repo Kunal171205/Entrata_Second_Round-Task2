@@ -58,3 +58,8 @@ Include a "Sum Check" at the bottom that explicitly sums the shares and shows if
 Style with simple CSS (no framework). Make it look nice but don't go overboard — focus on clarity.
 Keep it all in one file for now: index.html + embedded CSS + embedded script that uses the tip-splitter.js module.
 
+FIFTH PROMPT:
+Behave like quality engineer/test engineer who is responsible for the ui tasks
+Create a one python file having the different test case help to detect that the bug is resolved or not.
+So delivearble is : Pytest file having the script for testing with resolved installatio dependencies
+Note: Use playrights for python for the ui testing task.
