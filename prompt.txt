@@ -1,0 +1,24 @@
+INITIAL PROMPT:
+
+CONTEXT :Language/framework + version: JavaScript (ES6+), no framework Where it runs: local What changed recently: none — initial implementation
+
+THE BUG : 
+Expected behavior: splitBill applies the tip exactly once, splits the resulting total evenly across N people in whole cents, and all shares sum back to the exact grand total — with any leftover cent explicitly assigned to specific people. 
+Actual behavior: Tip gets double-counted and/or the extra cent is mis-assigned, so per-person shares don't sum to the true total.
+
+Reproduction steps:
+
+Call splitBill(10.03, 15, 3)
+Observe the returned per-person shares
+Sum them → does not equal the correct bill+tip total
+Frequency: always — deterministic, not intermittent
+
+CONSTRAINTS : Do NOT touch: function names/signatures (splitBill, calculateTotal) — keep the public API stable Do NOT introduce: new dependencies Must remain compatible with: callers passing (bill, tipPercent, numPeople) and expecting an array/object of per-person shares
+
+
+SECOND PROMPT:
+OUTPUT FORMAT
+Root cause explanation
+Fix as a diff/patch
+One-line commit message
+No speculative fixes — only propose a fix once root cause is confirmed
