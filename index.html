@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tip Splitter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --surface: #ffffff;
+      --text: #202124;
+      --text-muted: #5f6368;
+      --primary: #1a73e8;
+      --primary-hover: #174ea6;
+      --border: #dadce0;
+      --success: #0f9d58;
+      --warning: #f4b400;
+      --radius: 12px;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      background-color: var(--surface);
+      width: 100%;
+      max-width: 500px;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    
+    .header {
+      background-color: var(--primary);
+      color: white;
+      padding: 24px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 24px;
+      font-weight: 500;
+    }
+    
+    .content {
+      padding: 24px;
+    }
+    
+    .input-group {
+      margin-bottom: 20px;
+    }
+    
+    .input-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text-muted);
+    }
+    
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    
+    .prefix, .suffix {
+      position: absolute;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    
+    .prefix { left: 16px; }
+    .suffix { right: 16px; }
+    
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 16px;
+      font-family: inherit;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    
+    input.has-prefix { padding-left: 32px; }
+    input.has-suffix { padding-right: 32px; }
+    
+    input:focus {
+      border-color: var(--primary);
+    }
+    
+    .pills {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .pill {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    
+    .pill:hover {
+      background: #e8f0fe;
+      color: var(--primary);
+    }
+    
+    .pill.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      background: var(--bg);
+      padding: 16px;
+      border-radius: 8px;
+      margin: 24px 0;
+      text-align: center;
+    }
+    
+    .summary-item .label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    
+    .summary-item .val {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    
+    .summary-item.total .val {
+      color: var(--primary);
+      font-size: 22px;
+    }
+    
+    .results h2 {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    
+    th {
+      text-align: left;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    td {
+      padding: 12px 0;
+      border-bottom: 1px solid #f1f3f4;
+    }
+    
+    td.share {
+      font-weight: 700;
+    }
+    
+    .note {
+      font-size: 12px;
+      background: #e6f4ea;
+      color: var(--success);
+      padding: 2px 8px;
+      border-radius: 12px;
+      display: inline-block;
+    }
+    
+    .sum-check {
+      background: #f8f9fa;
+      padding: 16px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 500;
+    }
+    
+    .sum-check.exact { color: var(--success); }
+    .sum-check.mismatch { color: var(--warning); }
+    
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>Tip Splitter</h1>
+    </div>
+    
+    <div class="content">
+      <!-- INPUTS -->
+      <div class="input-group">
+        <label for="bill">Bill Amount</label>
+        <div class="input-wrapper">
+          <span class="prefix">$</span>
+          <input type="number" id="bill" class="has-prefix" placeholder="0.00" min="0" step="0.01">
+        </div>
+      </div>
+      
+      <div class="input-group">
+        <label for="tip">Tip Percentage</label>
+        <div class="input-wrapper">
+          <input type="number" id="tip" class="has-suffix" value="18" min="0">
+          <span class="suffix">%</span>
+        </div>
+        <div class="pills" id="tip-pills" aria-label="Quick tip percentages">
+          <button class="pill" data-val="10">10%</button>
+          <button class="pill" data-val="15">15%</button>
+          <button class="pill active" data-val="18">18%</button>
+          <button class="pill" data-val="20">20%</button>
+          <button class="pill" data-val="25">25%</button>
+        </div>
+      </div>
+      
+      <div class="input-group">
+        <label for="people">Number of People</label>
+        <input type="number" id="people" value="2" min="1">
+      </div>
+      
+      <!-- SUMMARY -->
+      <div class="summary-row">
+        <div class="summary-item">
+          <div class="label">Subtotal</div>
+          <div class="val" id="val-subtotal">$0.00</div>
+        </div>
+        <div class="summary-item">
+          <div class="label">Tip</div>
+          <div class="val" id="val-tip">$0.00</div>
+        </div>
+        <div class="summary-item total">
+          <div class="label">Grand Total</div>
+          <div class="val" id="val-total">$0.00</div>
+        </div>
+      </div>
+      
+      <!-- RESULTS -->
+      <div class="results" id="results-section" style="display: none;">
+        <h2>Per-Person Breakdown</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Person</th>
+              <th>Share</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody id="breakdown-body">
+            <!-- Rendered via JS -->
+          </tbody>
+        </table>
+        
+        <div class="sum-check" id="sum-check">
+          <span>Sum Check: <strong id="sum-val">$0.00</strong></span>
+          <span id="sum-icon">✅ Exact Match</span>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- TIP SPLITTER LOGIC MODULE -->
+  <script type="module" id="tip-splitter-module">
+    export function calculateTotal(bill, tipPercent) {
+      const tip = bill * (tipPercent / 100);
+      return bill + tip;
+    }
+
+    export function splitEvenly(total, numPeople) {
+      const totalCents = Math.round(total * 100);
+      const baseShare = Math.floor(totalCents / numPeople);
+      const remainder = totalCents % numPeople;
+
+      const shares = Array.from({ length: numPeople }, (_, i) =>
+        (baseShare + (i < remainder ? 1 : 0)) / 100
+      );
+
+      return {
+        shares,
+        remainderCents: remainder,
+        remainderAssignedTo: Array.from({ length: remainder }, (_, i) => i + 1),
+      };
+    }
+
+    export function splitBill(bill, tipPercent, numPeople) {
+      const total = calculateTotal(bill, tipPercent);
+      return splitEvenly(total, numPeople);
+    }
+  </script>
+
+  <!-- APP WIRING -->
+  <script type="module">
+    // To satisfy the constraint of a single file but still using import, 
+    // we use a blob URL to import the inline script block as a module.
+    const moduleScript = document.getElementById('tip-splitter-module').textContent;
+    const blob = new Blob([moduleScript], { type: 'text/javascript' });
+    const url = URL.createObjectURL(blob);
+    
+    import { splitBill, calculateTotal } from /* webpackIgnore: true */ url;
+
+    // DOM Elements
+    const els = {
+      bill: document.getElementById('bill'),
+      tip: document.getElementById('tip'),
+      people: document.getElementById('people'),
+      pills: document.querySelectorAll('.pill'),
+      
+      subtotal: document.getElementById('val-subtotal'),
+      tipAmt: document.getElementById('val-tip'),
+      total: document.getElementById('val-total'),
+      
+      results: document.getElementById('results-section'),
+      tbody: document.getElementById('breakdown-body'),
+      
+      sumCheck: document.getElementById('sum-check'),
+      sumVal: document.getElementById('sum-val'),
+      sumIcon: document.getElementById('sum-icon')
+    };
+
+    const fmt = (num) => '$' + Number(num).toFixed(2);
+
+    function updateUI() {
+      const bill = parseFloat(els.bill.value);
+      const tipPct = parseFloat(els.tip.value) || 0;
+      const party = parseInt(els.people.value, 10);
+
+      // Validate
+      if (isNaN(bill) || bill <= 0 || isNaN(party) || party < 1) {
+        els.results.style.display = 'none';
+        els.subtotal.textContent = '$0.00';
+        els.tipAmt.textContent = '$0.00';
+        els.total.textContent = '$0.00';
+        return;
+      }
+
+      // Calculations
+      const tipAmt = bill * (tipPct / 100);
+      const grandTotal = calculateTotal(bill, tipPct);
+      const result = splitBill(bill, tipPct, party);
+
+      // Update Summary
+      els.subtotal.textContent = fmt(bill);
+      els.tipAmt.textContent = fmt(tipAmt);
+      els.total.textContent = fmt(grandTotal);
+
+      // Render Table
+      els.tbody.innerHTML = '';
+      result.shares.forEach((share, i) => {
+        const isExtra = i < result.remainderCents;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>Person ${i + 1}</td>
+          <td class="share">${fmt(share)}</td>
+          <td>${isExtra ? '<span class="note">+1¢ remainder</span>' : ''}</td>
+        `;
+        els.tbody.appendChild(tr);
+      });
+
+      // Sum Check
+      // Reduce string matching the toFixed formatting to avoid JS float addition errors
+      const sum = result.shares.reduce((acc, val) => acc + val, 0);
+      // Math.round to avoid JS 0.0100000000000009 issues in UI
+      const roundedSum = Math.round(sum * 100) / 100;
+      const roundedGrand = Math.round(grandTotal * 100) / 100;
+      
+      els.sumVal.textContent = fmt(roundedSum);
+      
+      if (roundedSum === roundedGrand) {
+        els.sumCheck.className = 'sum-check exact';
+        els.sumIcon.textContent = '✅ Exact Match';
+      } else {
+        els.sumCheck.className = 'sum-check mismatch';
+        els.sumIcon.textContent = '⚠️ Mismatch';
+      }
+
+      els.results.style.display = 'block';
+    }
+
+    // Event Listeners
+    [els.bill, els.tip, els.people].forEach(input => {
+      input.addEventListener('input', updateUI);
+    });
+
+    els.pills.forEach(pill => {
+      pill.addEventListener('click', (e) => {
+        // Update active pill UI
+        els.pills.forEach(p => p.classList.remove('active'));
+        e.target.classList.add('active');
+        
+        // Update tip input and trigger calculate
+        els.tip.value = e.target.dataset.val;
+        updateUI();
+      });
+    });
+
+    // Initial render attempt if values exist
+    updateUI();
+  </script>
+</body>
+</html>
