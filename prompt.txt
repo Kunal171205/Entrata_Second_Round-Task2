@@ -22,3 +22,22 @@ Root cause explanation
 Fix as a diff/patch
 One-line commit message
 No speculative fixes — only propose a fix once root cause is confirmed
+
+
+THIRD PROMPT:
+Write a full unit test suite for the fixed splitBill function to prove correctness and prevent regressions.
+
+
+REQUIREMENTS
+
+Cover at minimum:
+The original bug scenario: splitBill(10.03, 15, 3) — shares must sum to exactly the bill+tip total
+0% tip
+Evenly divisible total (no remainder to assign)
+Remainder of 1 cent, remainder of 2 cents (party size 3, 4, 5+)
+Single person (numPeople = 1) — gets 100% of total
+Large party size (e.g. 10+ people) with a small bill
+Every test asserts sum(shares) === totalCents/100 exactly, not just "close enough"
+
+OUTPUT FORMAT
+One test file (tip-splitter.test.js)
